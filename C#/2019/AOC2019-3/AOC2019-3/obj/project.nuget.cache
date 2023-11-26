@@ -1,0 +1,13 @@
+{
+  "version": 2,
+  "dgSpecHash": "QVFmi+QYLbl/7W9F67B7AnaDkIn6RLICEqfSz36rXwsgYx9/vO1C5GalGWvSCsAsa8glyhbVJoPE869SYZpZvg==",
+  "success": true,
+  "projectFilePath": "C:\\Users\\tomwa\\source\\repos\\Advent Of Code 2019\\AOC2019-3\\AOC2019-3\\AOC2019-3.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\tomwa\\.nuget\\packages\\microsoft.aspnetcore.app.ref\\3.0.1\\microsoft.aspnetcore.app.ref.3.0.1.nupkg.sha512",
+    "C:\\Users\\tomwa\\.nuget\\packages\\microsoft.netcore.app.ref\\3.0.0\\microsoft.netcore.app.ref.3.0.0.nupkg.sha512",
+    "C:\\Users\\tomwa\\.nuget\\packages\\microsoft.netcore.app.host.win-x64\\3.0.3\\microsoft.netcore.app.host.win-x64.3.0.3.nupkg.sha512",
+    "C:\\Users\\tomwa\\.nuget\\packages\\microsoft.windowsdesktop.app.ref\\3.0.0\\microsoft.windowsdesktop.app.ref.3.0.0.nupkg.sha512"
+  ],
+  "logs": []
+}
