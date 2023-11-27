@@ -20,7 +20,7 @@ fn main() {
     let mut sizes: HashMap<String, i64> = HashMap::new();
 
     for line in input.lines() {
-        let parts = line.split(" ").collect::<Vec<&str>>();
+        let parts = line.split(' ').collect::<Vec<&str>>();
 
         match parts[0] {
             "$" => match parts[1] {

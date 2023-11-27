@@ -62,7 +62,7 @@ fn main() {
     let mut cached = stacks.clone();
 
     for i in instructions.clone() {
-        let parts = i.split(" ").collect::<Vec<&str>>();
+        let parts = i.split(' ').collect::<Vec<&str>>();
 
         let amt = parts[1].parse::<usize>().unwrap();
         let from = parts[3].parse::<usize>().unwrap() - 1;
@@ -85,7 +85,7 @@ fn main() {
     stacks = cached;
 
     for i in instructions {
-        let parts = i.split(" ").collect::<Vec<&str>>();
+        let parts = i.split(' ').collect::<Vec<&str>>();
 
         let amt = parts[1].parse::<usize>().unwrap();
         let from = parts[3].parse::<usize>().unwrap() - 1;
