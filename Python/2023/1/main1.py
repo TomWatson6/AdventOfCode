@@ -9,13 +9,14 @@ total = 0
 
 for line in lines:
     digits = []
+
     for c in line:
         if c.isnumeric():
             digits.append(c)
-    to_add = int(str(digits[0]) + str(digits[-1]))
-    total += to_add
+    total += int(digits[0] + digits[-1])
 
 print("Part 1:", total)
+
 total = 0
 
 for line in [re.findall(r"(?=(\d|" + "|".join(C) + "))", line) for line in lines]:
@@ -27,8 +28,7 @@ for line in [re.findall(r"(?=(\d|" + "|".join(C) + "))", line) for line in lines
         else:
             digits.append(int(r))
 
-    to_add = int(str(digits[0]) + str(digits[-1]))
-    total += to_add
+    total += int(str(digits[0]) + str(digits[-1]))
 
 print("Part 2:", total)
 
