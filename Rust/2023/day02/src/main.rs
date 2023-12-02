@@ -25,7 +25,7 @@ fn main() {
 
     let mut games: Vec<HashMap<&str, u32>> = Vec::new();
 
-    for (i, line) in input.lines().map(|x| x.split(": ").collect::<Vec<&str>>()[1]).enumerate() {
+    for line in input.lines().map(|x| x.split(": ").collect::<Vec<&str>>()[1]) {
         let parts = line.split("; ").collect::<Vec<&str>>();
         let mut game: HashMap<&str, u32> = HashMap::new();
 
