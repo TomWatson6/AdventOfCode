@@ -5,3 +5,12 @@ version = 3
 [[package]]
 name = "day04"
 version = "0.1.0"
+dependencies = [
+ "peak_alloc",
+]
+
+[[package]]
+name = "peak_alloc"
+version = "0.2.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "84d3978b0aa7d46c34452384c28264ac859c652b67635f6acfd598e1b6608de5"
