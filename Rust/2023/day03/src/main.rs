@@ -14,23 +14,27 @@ fn read_file(file_name: &str) -> String {
     contents
 }
 
-fn get_char(input: String, r: usize, c: usize) -> char {
+fn get_char(input: &String, r: usize, c: usize) -> char {
     input.lines().nth(r).unwrap()
         .chars().nth(c).unwrap()
 }
 
-fn get_bounding_box_coords(input: String, r: i32, c: i32, t: i32) -> HashSet<(usize, usize)> {
+fn get_bounding_box_coords(input: &String, r: &usize, c: &usize, t: &usize) -> (HashSet<(usize, usize)>, bool) {
     let mut bounding_box_coords: HashSet<(usize, usize)> = HashSet::new();
+    let mut contains_gear = false;
+    let r_lower = if *r == 0 { 0 } else { r - 1 };
+    let c_lower = if *c == 0 { 0 } else { c - 1 };
 
-    for rr in r-1..r+2 {
-        for cc in c-1..c+t+1 {
-            if rr < 0 || cc < 0 {
-                continue;
-            }
-
+    for rr in r_lower..r+2 {
+        for cc in c_lower..c+t+1 {
             match input.lines().nth(rr as usize) {
                 Some(x) => match x.chars().nth(cc as usize) {
-                    Some(y) => bounding_box_coords.insert((rr as usize, cc as usize)),
+                    Some(y) => {
+                        bounding_box_coords.insert((rr, cc));
+                        if y == '*' {
+                            contains_gear = true;
+                        }
+                    },
                     None => continue,
                 },
                 None => continue,
@@ -38,13 +42,13 @@ fn get_bounding_box_coords(input: String, r: i32, c: i32, t: i32) -> HashSet<(us
         }
     }
 
-    bounding_box_coords
+    (bounding_box_coords, contains_gear)
 }
 
 fn main() {
     let input = read_file("input.txt");
 
-    let mut bounding_boxes: Vec<(i32, HashSet<(usize, usize)>)> = Vec::new();
+    let mut bounding_boxes: Vec<(usize, HashSet<(usize, usize)>, bool)> = Vec::new();
 
     for (i, line) in input.lines().enumerate() {
         let mut j = 0;
@@ -67,31 +71,23 @@ fn main() {
                 }
 
                 let n: String = n.into_iter().collect();
+                let n: usize = n.parse().unwrap();
+                let (bounding_box, contains_gear) = get_bounding_box_coords(&input, &i, &j, &t);
 
-                bounding_boxes.push(
-                    (
-                        n.parse().unwrap(), 
-                        get_bounding_box_coords(
-                            input.clone(), 
-                            i.try_into().unwrap(), 
-                            j.try_into().unwrap(), 
-                            t.try_into().unwrap()
-                        )
-                    )
-                );
+                bounding_boxes.push((n, bounding_box, contains_gear));
 
                 j += t;
             }
 
-            j += 1
+            j += 1;
         }
     }
 
     let mut total = 0;
 
-    for (num, bounding_box_coord) in bounding_boxes.clone() {
+    for (num, bounding_box_coord, contains_gear) in bounding_boxes.clone() {
         for coord in bounding_box_coord {
-            let c = get_char(input.clone(), coord.0, coord.1);
+            let c = get_char(&input, coord.0, coord.1);
             if !c.is_numeric() && c != '.' {
                 total += num;
                 break;
@@ -103,19 +99,23 @@ fn main() {
 
     total = 0;
 
+    bounding_boxes.retain(|(_, _, contains_gear)| *contains_gear);
+
     for i in 0..bounding_boxes.len() - 1 {
         let set1 = &bounding_boxes[i].1;
 
         for j in i + 1..bounding_boxes.len() {
             let set2 = &bounding_boxes[j].1;
 
-            let intersection = set1.intersection(set2);
+            let intersection: HashSet<_> = set1.intersection(set2).cloned().collect();
 
-            if intersection.clone().count() > 0 {
-                for coord in intersection {
-                    if get_char(input.clone(), coord.0, coord.1) == '*' {
-                        total += bounding_boxes[i].0 * bounding_boxes[j].0;
-                    }
+            if intersection.is_empty() {
+                continue;
+            }
+
+            for coord in intersection {
+                if get_char(&input, coord.0, coord.1) == '*' {
+                    total += bounding_boxes[i].0 * bounding_boxes[j].0;
                 }
             }
         }
