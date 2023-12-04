@@ -19,7 +19,7 @@ fn read_file(file_name: &str) -> String {
     contents
 }
 
-fn get_num_cards(cards: &HashMap<usize, (HashSet<usize>, HashSet<usize>)>, id: &usize, winning_cards: &HashMap<usize, usize>, memo: &mut HashMap<usize, usize>) -> usize {
+fn get_num_cards(id: &usize, winning_cards: &HashMap<usize, usize>, memo: &mut HashMap<usize, usize>) -> usize {
     if let Some(x) = memo.get(id) {
         return *x;
     }
@@ -30,7 +30,7 @@ fn get_num_cards(cards: &HashMap<usize, (HashSet<usize>, HashSet<usize>)>, id: &
         total += x;
 
         for i in id + 1..id + x + 1 {
-            total += get_num_cards(cards, &i, winning_cards, memo);
+            total += get_num_cards(&i, winning_cards, memo);
         }
 
         *memo.entry(*id).or_insert(0) = total;
@@ -108,8 +108,8 @@ fn main() {
     total = cards.len();
     let mut memo: HashMap<usize, usize> = HashMap::new();
 
-    for (id, _) in cards.iter() {
-        total += get_num_cards(&cards, &id, &winning_cards, &mut memo)
+    for (id, _) in winning_cards.iter() {
+        total += get_num_cards(&id, &winning_cards, &mut memo)
     }
     
     println!("Part 2: {}", total);
