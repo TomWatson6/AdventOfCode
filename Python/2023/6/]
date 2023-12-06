@@ -1,0 +1,63 @@
+# import cmath
+import math
+
+with open(0) as f:
+    lines = [x.strip() for x in f.readlines()]
+
+time = list(map(int, [x.strip() for x in lines[0].split()][1:]))
+distance = list(map(int, [x.strip() for x in lines[1].split()][1:]))
+
+# f = lambda t, x: (t - x) * x
+
+# win = (t - x) * x > d
+# win = tx - x^2 > d
+# win = x*2 - tx - d > 0
+
+def calc(d, t):
+    disc = (t ** 2) - (4 * d)
+    return (-t - math.sqrt(disc)) // 2, (-t + math.sqrt(disc)) // 2
+
+product = 1
+
+for t, d in zip(time, distance):
+    wins = 0
+    for x in range(t):
+        outcome = (t - x) * x
+        if outcome > d:
+            wins += 1
+
+    print(wins, calc(d, t))
+    product *= wins
+
+print("Part 1:", product)
+
+time = int("".join([str(x) for x in time]))
+distance = int("".join([str(x) for x in distance]))
+
+wins = 0
+for x in range(time):
+    outcome = (time - x) * x
+    if outcome > distance:
+        wins += 1
+
+print("Part 2:", wins)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
