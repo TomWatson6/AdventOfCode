@@ -14,7 +14,7 @@ fn read_file(file_name: &str) -> String {
     contents
 }
 
-fn get_next(seq: &Vec<i64>) -> i64 {
+fn get_next_inc(seq: &Vec<i64>) -> i64 {
     let mut diffs: Vec<i64> = Vec::new();
 
     for i in 0..seq.len() - 1 {
@@ -25,7 +25,7 @@ fn get_next(seq: &Vec<i64>) -> i64 {
         return diffs[0];
     }
 
-    diffs[diffs.len() - 1] + get_next(&diffs)
+    diffs[diffs.len() - 1] + get_next_inc(&diffs)
 }
 
 fn main() {
@@ -35,13 +35,13 @@ fn main() {
         let mut ans = 0;
 
         for line in input.lines() {
-            let mut seq: Vec<i64> = line.split(' ').filter_map(|x| x.parse().ok()).collect();
+            let mut seq: Vec<i64> = line.split(' ').map(|x| x.parse().unwrap()).collect();
 
             if p2 {
                 seq.reverse();
             }
 
-            ans += seq.last().unwrap() + get_next(&seq);
+            ans += seq.last().unwrap() + get_next_inc(&seq);
         }
 
         println!("Part {}: {}", if p2 { 2 } else { 1 }, ans);
