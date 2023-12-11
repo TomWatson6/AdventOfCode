@@ -40,14 +40,8 @@ fn main() {
     let time: usize = times.iter().map(|&x| x.to_string()).collect::<String>().parse().unwrap();
     let distance: usize = distances.iter().map(|&x| x.to_string()).collect::<String>().parse().unwrap();
 
-    let mut wins = 0;
-
-    for x in 0..time {
-        if (time - x) * x > distance {
-            wins += 1;
-        }
-    }
-
+    let wins: Vec<usize> = (0..time).collect();
+    let wins = wins.partition_point(|&x| (time - x) * x > distance) - wins.partition_point(|&x| (time - x) * x < distance);
     println!("Part 2: {}", wins);
 }
 
