@@ -1,0 +1,88 @@
+
+with open(0) as f:
+    blocks = [x.strip() for x in f.read().split("\n\n")]
+
+rules = [x.strip() for x in blocks[0].split("\n")]
+parts = [x.strip() for x in blocks[1].split("\n")]
+
+print(rules, parts)
+
+R = {}
+
+for rule in rules:
+    name, rule = rule.split("{")
+    rule = rule.strip("}")
+    rs = rule.split(",")
+    R[name] = [r.split(":") for r in rs]
+
+ACC = []
+REJ = []
+
+for part in parts:
+    part = part[1:-1].split(",")
+    A = {}
+    for p in part:
+        name, val = p.split("=")
+        A[name] = int(val)
+
+    rules = R["in"]
+    n = None
+    i = 0
+
+    while True:
+        done = False
+        for rule in rules:
+            print(rule)
+            if len(rule) == 1:
+                if rule[0] == 'A':
+                    ACC.append(A)
+                    done = True
+                elif rule[0] == 'R':
+                    REJ.append(A)
+                    done = True
+                else:
+                    n = rule[0]
+                break
+
+            if eval(str(A[rule[0][0]]) + rule[0][1:]):
+                if rule[1] == 'A':
+                    ACC.append(A)
+                    done = True
+                elif rule[1] == 'R':
+                    REJ.append(A)
+                    done = True
+                else:
+                    n = rule[1]
+                break
+
+        i += 1
+
+        if i > 20:
+            break
+        if done:
+            break
+        rules = n
+
+print(len(ACC))
+print(len(REJ))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
