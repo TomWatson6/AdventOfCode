@@ -21,10 +21,6 @@ S = {}
 conj = []
 M = {}
 
-# broadcaster 0
-# % 1
-# & 2
-
 for line in lines:
     left, right = line.split(" -> ")
     if left[0] in "%&":

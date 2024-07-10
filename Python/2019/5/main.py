@@ -113,21 +113,21 @@ def process(I):
         opcode, modes = parse(I[ins_ptr])
 
         if opcode == 1:
-            add(zip(modes, I[ins_ptr + 1: ins_ptr + 4]))
+            add(list(zip(modes, I[ins_ptr + 1: ins_ptr + 4])))
         elif opcode == 2:
-            mult(zip(modes, I[ins_ptr + 1: ins_ptr + 4]))
+            mult(list(zip(modes, I[ins_ptr + 1: ins_ptr + 4])))
         elif opcode == 3:
-            input(zip(modes, I[ins_ptr + 1:ins_ptr + 2]))
+            input(list(zip(modes, I[ins_ptr + 1:ins_ptr + 2])))
         elif opcode == 4:
-            output(zip(modes, I[ins_ptr + 1: ins_ptr + 2]))
+            output(list(zip(modes, I[ins_ptr + 1: ins_ptr + 2])))
         elif opcode == 5:
-            jump_if_true(zip(modes, I[ins_ptr + 1: ins_ptr + 3]))
+            jump_if_true(list(zip(modes, I[ins_ptr + 1: ins_ptr + 3])))
         elif opcode == 6:
-            jump_if_false(zip(modes, I[ins_ptr + 1: ins_ptr + 3]))
+            jump_if_false(list(zip(modes, I[ins_ptr + 1: ins_ptr + 3])))
         elif opcode == 7:
-            less_than(zip(modes, I[ins_ptr + 1: ins_ptr + 4]))
+            less_than(list(zip(modes, I[ins_ptr + 1: ins_ptr + 4])))
         elif opcode == 8:
-            equals(zip(modes, I[ins_ptr + 1: ins_ptr + 4]))
+            equals(list(zip(modes, I[ins_ptr + 1: ins_ptr + 4])))
         else:
             assert False, I[ins_ptr]
 

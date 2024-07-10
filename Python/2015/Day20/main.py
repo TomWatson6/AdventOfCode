@@ -1,45 +1,59 @@
 
+from collections import defaultdict
+import math
+
 input = 34000000
-houses = []
-counters = []
-counter = 1
+E = defaultdict(int)
 
-def get_factors(x):
+def get_factors(number):
     factors = []
-
-    for i in range(1, x + 1):
-        if x % i == 0 and i % 10 == 0:
+    sqrt_num = int(math.sqrt(number))
+    
+    for i in range(1, sqrt_num + 1):
+        if number % i == 0:
             factors.append(i)
-            
+            if i != number // i:
+                factors.append(number // i)
+    
     return factors
 
+def presents(house_number):
+    factors = get_factors(house_number)
+    output = 0
 
-factors = get_factors(input)
-combinations = []
+    for f in factors:
+        output += f * 10
 
+    return output
 
+def presents2(house_number):
+    global E
+    factors = get_factors(house_number)
+    output = 0
 
-# def get_numbers(numbers, curr, amount):
-#     if amount == 0:
-#         return None
+    for f in factors:
+        if E[f] >= 50:
+            continue
+        E[f] += 1
+        output += f * 11
 
-#     combos = []
-
-#     for n in numbers:
-#         if amount > 1:
-#             temp = get_numbers([x for x in numbers if x != n], [n], amount - 1)
-#             temp.append(n)
-#             [combos.append(t) for t in temp]
-#         elif amount == 1:
-#             combos.append(n)
-
-#     return list(set(combos))
-
-
-# print(get_numbers(factors, 2))
+    return output
 
 
-# print(f"Part 1: {}")
+def search(number):
+    for i in range(1, number):
+        outcome = presents(i)
+        if outcome > number:
+            return i
+
+def search2(number):
+    for i in range(1, number):
+        outcome = presents2(i)
+        if outcome > number:
+            return i
+    
+print("Part 1:", search(input))
+print("Part 2:", search2(input))
 
 
 

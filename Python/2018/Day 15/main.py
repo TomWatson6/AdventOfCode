@@ -1,7 +1,7 @@
 from collections import deque
 from copy import deepcopy
 
-with open("simple_input2.txt") as f:
+with open(0) as f:
     G = [[c for c in r.strip()] for r in f.readlines()]
 
 Copy = deepcopy(G)
@@ -66,7 +66,7 @@ def bfs(start, dest):
             p = deepcopy(path)
             p.append(a)
             Q.append((a, p))
-            
+
 def get_enemies(ch):
     enemies = []
     e = 'G'

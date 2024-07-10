@@ -15,11 +15,11 @@ fn read_file(file_name: &str) -> String {
 }
 
 fn main() {
-    let req: HashMap<&str, u32> = HashMap::from(vec![
+    let req: HashMap<&str, u32> = [
         ("red", 12),
         ("green", 13),
         ("blue", 14),
-    ].iter().cloned().collect::<HashMap<_, _>>());
+    ].iter().cloned().collect::<HashMap<_, _>>();
 
     let input = read_file("input.txt");
 

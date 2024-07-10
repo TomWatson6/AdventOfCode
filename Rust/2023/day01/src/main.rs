@@ -15,10 +15,10 @@ fn read_file(file_name: &str) -> String {
 }
 
 fn convert(mappings: &Vec<(&str, &str)>, s: String) -> String {
-    let mut output = String::from(s);
+    let mut output = s;
 
     for (text, rep) in mappings {
-        let replacement = format!("{}{}{}", text.chars().nth(0).unwrap(), rep, text.chars().nth(text.len() - 1).unwrap());
+        let replacement = format!("{}{}{}", text.chars().next().unwrap(), rep, text.chars().nth(text.len() - 1).unwrap());
         output = output.replace(text, &replacement);
     }
 
@@ -44,9 +44,10 @@ fn count_numbers(p2: bool) -> i32 {
     for mut line in input.lines() {
         if p2 {
             total += assemble_number(convert(&mappings, line.to_string()).as_str());
-        } else {
-            total += assemble_number(line);
+            continue;
         }
+
+        total += assemble_number(line);
     }
 
     total
@@ -62,7 +63,7 @@ fn assemble_number(line: &str) -> i32 {
         }
     }
 
-    let combined = format!("{}{}", nums[0].to_string(), nums[nums.len()-1].to_string());
+    let combined = format!("{}{}", nums[0], nums[nums.len()-1]);
     combined.parse::<i32>().unwrap()
 }
 

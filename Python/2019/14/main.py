@@ -1,51 +1,94 @@
-from collections import defaultdict
+from collections import defaultdict, deque
 import math
 
-with open("simple_input.txt") as f:
+with open(0) as f:
     lines = [line.strip().split(" => ") for line in f.readlines()]
 
-M = {}
+M = defaultdict(list)
+MB = defaultdict(set)
 A = {}
+A['ORE'] = 1
 
-for line in lines:
-    parts = line[0].split(", ")
-    input = [p.split(" ") for p in parts]
-    output = tuple([x for x in line[1].split(" ")])
+for left, right in lines:
+    left = left.split(", ")
+    right = right.split()
+    A[right[1]] = int(right[0])
 
-    M[output[1]] = [(x[1], int(x[0])) for x in input]
+    for l in left:
+        amt, res = l.split()
+        M[right[1]].append((res, int(amt)))
+        MB[res].add(right[1])
 
-    if output[1] in A:
-        assert False, output[1]
+# res = defaultdict(int)
 
-    A[output[1]] = int(output[0])
+# def dfs(req, amt):
+#     global res
+#     ore = 0
 
-R = defaultdict(int)
+#     if req == "ORE":
+#         res[req] += amt
+#         return amt
 
-def make(r):
-    global R
+#     for ingred, needed in M[req]:
+#         # This is adjusted amount based on above amount passed in
+#         n = needed * amt
+#         # We need to make the max of the Amount we have to make vs. what's needed, always round up
+#         # First we need to calculate how much we would have to make to encompass needed in the amount
+#         a = math.ceil(n / A[ingred]) * A[ingred]
+#         a1 = math.ceil((n - res[ingred]) / A[ingred]) * A[ingred]
+#         if a1 < a:
+#             ore += dfs(ingred, a1)
+#         else:
+#             ore += dfs(ingred, a)
+#         res[ingred] -= n
 
-    req = M[r]
+#     res[req] += amt
+#     return ore
 
-    for mat, amt in req:
-        print(mat, amt)
-        if mat == "ORE":
-            R[mat] += amt
+# ore = dfs("FUEL", 1)
+
+# print(res)
+# print(ore)
+
+def bfs(req, amt):
+    Q = deque([(req, amt, A[req])])
+    R = defaultdict(int)
+    ore = 0
+
+    while Q:
+        req, amt, div = Q.popleft()
+
+        if req == 'ORE':
+            ore += amt / div
             continue
 
-        if mat in R and R[mat] >= amt:
-            continue
+        final = 0
 
-        need = amt - R[mat]
-        to_make = int(math.ceil(need / A[mat]))
-        print(to_make)
-        for _ in range(to_make):
-            make(mat)
-        R[mat] += to_make
-        print(R)
-            
-make("FUEL")
+        r = math.ceil(amt - R[req] / A[req]) * A[req]
+        a = math.ceil(amt / A[req]) * A[req]
 
-print(R)
+        # If current resources makes a difference to amount required
+        if r != a:
+            # We need to calculate needed resources to make that difference
+            d, _ = math.modf((amt - R[req] / A[req]))
+            sub = int(d * A[req])
+            R[req] -= sub
+            final = r
+            # print(r, a, d, sub, R[req], final)
+        else:
+            if a != (amt // A[req]) * A[req]:
+                d, _ = math.modf(amt / A[req])
+                R[req] += int(d * A[req])
+            final = a
+
+        for ingred, needed in M[req]:
+            Q.append((ingred, final * needed, div * A[req]))
+
+    return ore
+
+ore = bfs("FUEL", 1)
+print(ore)
+
 
 
 

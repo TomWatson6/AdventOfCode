@@ -96,7 +96,7 @@ def inside_loop(loop_coords, pos, visited, depth):
 def flood_fill(loop_coords, inside):
     global r_low, r_high, c_low, c_high
 
-    start = (r_low - 1, c_low - 1)
+    start = (r_low - 10, c_low - 10)
     Q = deque([start])
     S = set()
 
@@ -115,7 +115,7 @@ def flood_fill(loop_coords, inside):
 
                 rr, cc = r + dr, c + dc
 
-                if rr < r_low - 1 or rr > r_high + 1 or cc < c_low - 1 or cc > c_high + 1:
+                if rr < r_low - 10 or rr > r_high + 10 or cc < c_low - 10 or cc > c_high + 10:
                     continue
 
                 if (rr, cc) in loop_coords:
@@ -179,6 +179,13 @@ loop = refine_loop(L)
 coords, to_remove = flood_fill(loop, inside)
 
 print("Part 2:", total - to_remove)
+
+
+
+
+
+
+
 
 
 

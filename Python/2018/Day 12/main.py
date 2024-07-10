@@ -27,30 +27,48 @@ def evolve(state):
     return new_state
 
 iterations = 50000000000
+# iterations = 20
 DP = {}
 i = 0
 count = 0
+offset = 0
 
 while i < iterations:
+    print(i, "/", iterations)
     trimmed = list(re.findall("(?<!=#)(#.*#)(?!=#)", state))[0]
     if trimmed in DP:
-        t = DP[trimmed]
-        print(t)
-        mul = iterations // t
-        i += t * mul
-    DP[trimmed] = i
-    new_state = evolve(state)
-    assert len(state) == len("".join(new_state[2:-2]))
-    if state == "".join(new_state[2:-2]):
-        count = i - 1
+        t, c = DP[trimmed]
+        curr = state.find('#')
+        offset = curr - c
+        offset *= iterations - i
         break
+    #     curr = state.find('#')
+    #     print(DP)
+    #     print(t, c, curr)
+    #     offset = curr - c
+    #     cycle_length = i - t
+    #     print(cycle_length)
+    #     mul = (iterations - i) // cycle_length
+    #     offset *= mul
+    #     i += cycle_length * mul
+    if trimmed not in DP:
+        DP[trimmed] = i, state.find('#')
+    new_state = evolve(state)
+    # assert len(state) == len("".join(new_state[2:-2]))
+    # if state == "".join(new_state[2:-2]):
+    #     count = i - 1
+    #     break
     state = new_state
-    print(len(state))
+    last = state.find('#')
     i += 1
     count += 1
 
-ans = sum([i - count * 2 if x == '#' else 0 for i, x in enumerate(state)])
-print("Part 1:", ans)
+    if i == 20:
+        ans = sum([i - count * 2 if x == '#' else 0 for i, x in enumerate(state)])
+        print("Part 1:", ans)
+
+ans = sum([(i + last + offset) if x == '#' else 0 for i, x in enumerate(state)])
+print("Part 2:", ans)
 
 
 

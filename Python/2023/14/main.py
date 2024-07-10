@@ -79,7 +79,6 @@ while i < ITERS:
         i += num_cycles * cycle_length
         cycled = True
 
-
     SEEN[t] = i
     i += 1
 

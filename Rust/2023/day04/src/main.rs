@@ -67,13 +67,13 @@ fn main() {
         let mut owned: HashSet<usize> = HashSet::new();
         let mut winners = true;
 
-        for i in 2..parts.len() {
-            if parts[i] == "|" {
+        for p in parts.iter().skip(2) {
+            if *p == "|" {
                 winners = false;
                 continue
             }
 
-            match parts[i].parse::<usize>() {
+            match p.parse::<usize>() {
                 Ok(x) => {
                     if winners {
                         winning.insert(x);
@@ -82,7 +82,7 @@ fn main() {
 
                     owned.insert(x);
                 },
-                Err(e) => panic!("{} -> {:?}", parts[i], e)
+                Err(e) => panic!("{} -> {:?}", p, e)
             }
         }
 
@@ -94,11 +94,11 @@ fn main() {
     for (id, sets) in cards.iter() {
         let winners: HashSet<&usize> = sets.0.intersection(&sets.1).collect();
 
-        if winners.len() > 0 {
-            *winning_cards.entry(*id).or_insert(0) = winners.len() as usize;
+        if !winners.is_empty() {
+            *winning_cards.entry(*id).or_insert(0) = winners.len();
 
             let base: usize = 2;
-            let count: usize = base.pow((winners.len() - 1) as u32) as usize;
+            let count: usize = base.pow((winners.len() - 1) as u32);
             total += count;
         }
     }
@@ -109,7 +109,7 @@ fn main() {
     let mut memo: HashMap<usize, usize> = HashMap::new();
 
     for (id, _) in winning_cards.iter() {
-        total += get_num_cards(&id, &winning_cards, &mut memo)
+        total += get_num_cards(id, &winning_cards, &mut memo)
     }
     
     println!("Part 2: {}", total);

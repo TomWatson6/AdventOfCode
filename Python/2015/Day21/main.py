@@ -1,18 +1,18 @@
-
+from copy import deepcopy
 
 class Player:
     def __init__(self, items):
         self.health = 100
-        self.damage = sum(items, key=lambda item: item.damage)
-        self.armor = sum(items, key=lambda item: item.armor)
-        self.cost = sum(items, key=lambda item: item.cost)
+        self.damage = sum([i.damage for i in items])
+        self.armor = sum([i.armor for i in items])
+        self.cost = sum([i.cost for i in items])
 
 class Boss:
     def __init__(self, s):
         parts = [x.strip() for x in s.split("\n")]
-        self.health = parts[0].split(" ")[2]
-        self.damage = parts[1].split(" ")[1]
-        self.armor = parts[2].split(" ")[1]
+        self.health = int(parts[0].split(" ")[2])
+        self.damage = int(parts[1].split(" ")[1])
+        self.armor = int(parts[2].split(" ")[1])
 
 class Item:
     def __init__(self, s, t):
@@ -22,10 +22,9 @@ class Item:
         self.damage = int(parts[-2])
         self.armor = int(parts[-1])
         self.type = t
-        print(self)
 
     def __str__(self):
-        return f"Type: {self.type}\n{self.name}:\nDamage: {self.damage}\nArmor: {self.armor}\nCost: {self.cost}"
+        return f"Type: {self.type}\nName: {self.name}\nDamage: {self.damage}\nArmor: {self.armor}\nCost: {self.cost}"
 
 def get_shop(file_name):
     weapons = []
@@ -47,53 +46,35 @@ def get_shop(file_name):
     for ring in input[2]:
         rings.append(Item(ring, "ring"))
 
-    return weapons, armor, rings
+    return weapons, armors, rings
 
 def get_perms(weapons, armor, rings):
-    W = []
-    WA = []
-    WAR = []
+    WA = [[w] for w in weapons] + [[w] + [a] for w in weapons for a in armor]
+    R = []
 
-    for w in weapons:
-        W.append([w])
+    for a in range(len(rings) - 1):
+        for b in range(a + 1, len(rings)):
+            R.append([rings[a], rings[b]])
 
-    for w in W:
-        WA.append(w)
-
-    for a in armor:
-        for w in W:
-            WA.append([w[0], a])
-
-    for wa in WA:
-        WAR.append(wa)
-
-    for wa in WA:
-        for r in rings:
-            col = wa
-            col.append(r)
-            WAR.append(col)
-
-    mul = []
-    for i in range(len(rings) - 1):
-        for j in range(i, len(rings)):
-            mul.append([rings[i], rings[j]])
-
-    print([(a.name, b.name) for a, b in mul])
-
-    for m in mul:
-        for wa in WA:
-            col = [wa]
-            [col.append(r for r in m)]
-            WAR.append(col)
+    # WA is no rings, rings has 1 rings, R has 2 rings to make all permutations
+    WAR = WA + [wa + [r] for wa in WA for r in rings] + [wa + r for wa in WA for r in R]
 
     return WAR
 
+def calc_damage(damage, armor):
+    return max(1, damage - armor)
+
 def play_game(player, boss):
-    '''
-        player with items
-        boss from input
-        returns outcome (win/loss) as bool
-    '''
+    while True:
+        boss.health -= calc_damage(player.damage, boss.armor)
+
+        if boss.health <= 0:
+            return True
+
+        player.health -= calc_damage(boss.damage, player.armor)
+
+        if player.health <= 0:
+            return False
 
 weapons, armor, rings = get_shop("shop.txt")
 boss = ""
@@ -101,8 +82,17 @@ boss = ""
 with open("input.txt") as f:
     boss = Boss(f.read())
 
-p = get_perms(weapons, armor, rings)
+perms = get_perms(weapons, armor, rings)
+best = 1e9
+worst = 0
 
-print("hello, world!")
+for p in perms:
+    player = Player(p)
 
+    if play_game(player, deepcopy(boss)):
+        best = min(best, player.cost)
+    else:
+        worst = max(worst, player.cost)
 
+print("Part 1:", best)
+print("Part 2:", worst)

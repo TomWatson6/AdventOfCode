@@ -62,7 +62,7 @@ fn main() {
 
     println!("Part 1: {}", count);
 
-    let starts: Vec<&str> = map.keys().filter(|x| x.ends_with('A')).map(|x| *x).collect();
+    let starts: Vec<&str> = map.clone().into_keys().filter(|x| x.ends_with('A')).collect();
     let mut positions: Vec<&str> = starts.clone();
     let mut occurrences: HashMap<&str, (usize, usize)> = HashMap::new();
 

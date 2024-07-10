@@ -45,6 +45,7 @@ def reset_values():
     relative_base = 0
 
 def add(params):
+    params = list(params)
     global I, ins_ptr
 
     a = read(params[0][0], params[0][1])
@@ -54,6 +55,7 @@ def add(params):
     ins_ptr += len(params) + 1
 
 def mult(params):
+    params = list(params)
     global I, ins_ptr
 
     a = read(params[0][0], params[0][1])
@@ -63,6 +65,7 @@ def mult(params):
     ins_ptr += len(params) + 1
 
 def input(params):
+    params = list(params)
     global I, ins_ptr, input_code
 
     # write(params[0][1], 1)
@@ -71,6 +74,7 @@ def input(params):
     ins_ptr += len(params) + 1
 
 def output(params):
+    params = list(params)
     global I, ins_ptr, output_code, outputs
 
     a = read(params[0][0], params[0][1])
@@ -80,6 +84,7 @@ def output(params):
     ins_ptr += len(params) + 1
 
 def jump_if_true(params):
+    params = list(params)
     global I, ins_ptr
 
     a = read(params[0][0], params[0][1])
@@ -91,6 +96,7 @@ def jump_if_true(params):
         ins_ptr += len(params) + 1
 
 def jump_if_false(params):
+    params = list(params)
     global I, ins_ptr
 
     a = read(params[0][0], params[0][1])
@@ -102,6 +108,7 @@ def jump_if_false(params):
         ins_ptr += len(params) + 1
 
 def less_than(params):
+    params = list(params)
     global I, ins_ptr
 
     a = read(params[0][0], params[0][1])
@@ -115,6 +122,7 @@ def less_than(params):
     ins_ptr += len(params) + 1
 
 def equals(params):
+    params = list(params)
     global I, ins_ptr
 
     a = read(params[0][0], params[0][1])
@@ -128,6 +136,7 @@ def equals(params):
     ins_ptr += len(params) + 1
 
 def adjust_relative_base(params):
+    params = list(params)
     global ins_ptr, relative_base
 
     a = read(params[0][0], params[0][1])
@@ -138,7 +147,7 @@ def adjust_relative_base(params):
 
 def parse(a):
     op = str(a).zfill(5)
-    
+
     return int(op[-2:]), [int(x) for x in op[:-2][::-1]]
 
 def read(m, x):
@@ -179,7 +188,6 @@ def process(I):
             input(zip(modes, get_slice(ins_ptr + 1, ins_ptr + 2)))
         elif opcode == code.output:
             output(zip(modes, get_slice(ins_ptr + 1, ins_ptr + 2)))
-
             if outputs % 2 == 1:
                 if output_code == 0:
                     d = (d - 1) % 4
@@ -187,14 +195,13 @@ def process(I):
                     d = (d + 1) % 4
                 else:
                     assert False, output_code
+                pos = (pos[0] + DIR[d][0], pos[1] + DIR[d][1])
             else:
                 G[pos] = output_code
                 S[pos] += 1
 
-            print(G)
-            pos = (pos[0] + DIR[d][0], pos[1] + DIR[d][1])
+            # print(G)
             # print(pos, d, output_code)
-                
         elif opcode == code.jump_if_true:
             jump_if_true(zip(modes, get_slice(ins_ptr + 1, ins_ptr + 3)))
         elif opcode == code.jump_if_false:
@@ -208,12 +215,33 @@ def process(I):
         else:
             assert False, I[ins_ptr]
 
-        print(ins_ptr)
+        # print(ins_ptr)
 
     return I[0]
 
+def print_grid(grid):
+    min_x = min(grid.keys(), key = lambda k: k[0])[0]
+    max_x = max(grid.keys(), key = lambda k: k[0])[0]
+    min_y = min(grid.keys(), key = lambda k: k[1])[1]
+    max_y = max(grid.keys(), key = lambda k: k[1])[1]
+
+    for y in range(min_y, max_y + 1):
+        row = ""
+        for x in range(min_x, max_x + 1):
+            row += str(grid[(y, x)])
+
+        print(row)
+    print()
+
 with open("input.txt") as f:
     I = {i: int(x) for i, x in enumerate(f.read().strip().split(","))}
+
+II = defaultdict(int)
+
+for k, v in I.items():
+    II[k] = v
+
+I = II
 
 CI = {x[0]: x[1] for x in I.items()}
 
@@ -226,7 +254,9 @@ input_code = lambda: G[pos]
 
 process(I)
 
-print(len(S))
+print(len([s for s in S.values() if s != 0]))
+# print(G)
+# print(S)
 
 # g_xlow = min([x[0] for x in G.keys()])
 # g_xhigh = max([x[0] for x in G.keys()])
@@ -248,8 +278,6 @@ print(len(S))
 # print(dir)
 # V.append(pos)
 # print(len(V), len(set(V)))
-
-
 
 
 

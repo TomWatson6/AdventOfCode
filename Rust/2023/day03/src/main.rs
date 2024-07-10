@@ -14,12 +14,12 @@ fn read_file(file_name: &str) -> String {
     contents
 }
 
-fn get_char(input: &String, r: usize, c: usize) -> char {
+fn get_char(input: &str, r: usize, c: usize) -> char {
     input.lines().nth(r).unwrap()
         .chars().nth(c).unwrap()
 }
 
-fn get_bounding_box_coords(input: &String, r: &usize, c: &usize, t: &usize) -> (HashSet<(usize, usize)>, bool) {
+fn get_bounding_box_coords(input: &str, r: &usize, c: &usize, t: &usize) -> (HashSet<(usize, usize)>, bool) {
     let mut bounding_box_coords: HashSet<(usize, usize)> = HashSet::new();
     let mut contains_gear = false;
     let r_lower = if *r == 0 { 0 } else { r - 1 };
@@ -27,8 +27,8 @@ fn get_bounding_box_coords(input: &String, r: &usize, c: &usize, t: &usize) -> (
 
     for rr in r_lower..r+2 {
         for cc in c_lower..c+t+1 {
-            match input.lines().nth(rr as usize) {
-                Some(x) => match x.chars().nth(cc as usize) {
+            match input.lines().nth(rr) {
+                Some(x) => match x.chars().nth(cc) {
                     Some(y) => {
                         bounding_box_coords.insert((rr, cc));
                         if y == '*' {
@@ -45,10 +45,17 @@ fn get_bounding_box_coords(input: &String, r: &usize, c: &usize, t: &usize) -> (
     (bounding_box_coords, contains_gear)
 }
 
+#[derive(Clone)]
+struct BoundingBox {
+    id: usize,
+    coords: HashSet<(usize, usize)>,
+    contains_gear: bool,
+}
+
 fn main() {
     let input = read_file("input.txt");
 
-    let mut bounding_boxes: Vec<(usize, HashSet<(usize, usize)>, bool)> = Vec::new();
+    let mut bounding_boxes: Vec<BoundingBox> = Vec::new();
 
     for (i, line) in input.lines().enumerate() {
         let mut j = 0;
@@ -74,7 +81,7 @@ fn main() {
                 let n: usize = n.parse().unwrap();
                 let (bounding_box, contains_gear) = get_bounding_box_coords(&input, &i, &j, &t);
 
-                bounding_boxes.push((n, bounding_box, contains_gear));
+                bounding_boxes.push(BoundingBox{id: n, coords: bounding_box, contains_gear});
 
                 j += t;
             }
@@ -85,11 +92,11 @@ fn main() {
 
     let mut total = 0;
 
-    for (num, bounding_box_coord, contains_gear) in bounding_boxes.clone() {
-        for coord in bounding_box_coord {
+    for bounding_box in bounding_boxes.clone() {
+        for coord in bounding_box.coords {
             let c = get_char(&input, coord.0, coord.1);
             if !c.is_numeric() && c != '.' {
-                total += num;
+                total += bounding_box.id;
                 break;
             }
         }
@@ -99,13 +106,13 @@ fn main() {
 
     total = 0;
 
-    bounding_boxes.retain(|(_, _, contains_gear)| *contains_gear);
+    bounding_boxes.retain(|bounding_box| bounding_box.contains_gear);
 
     for i in 0..bounding_boxes.len() - 1 {
-        let set1 = &bounding_boxes[i].1;
+        let set1 = &bounding_boxes[i].coords;
 
         for j in i + 1..bounding_boxes.len() {
-            let set2 = &bounding_boxes[j].1;
+            let set2 = &bounding_boxes[j].coords;
 
             let intersection: HashSet<_> = set1.intersection(set2).cloned().collect();
 
@@ -115,7 +122,7 @@ fn main() {
 
             for coord in intersection {
                 if get_char(&input, coord.0, coord.1) == '*' {
-                    total += bounding_boxes[i].0 * bounding_boxes[j].0;
+                    total += bounding_boxes[i].id * bounding_boxes[j].id;
                 }
             }
         }

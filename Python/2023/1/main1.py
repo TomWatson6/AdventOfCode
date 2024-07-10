@@ -2,7 +2,7 @@ import re
 
 C = ["one", "two", "three", "four", "five", "six", "seven", "eight", "nine"]
 
-with open("input.txt") as f:
+with open(0) as f:
     lines = [x.strip() for x in f.readlines()]
 
 total = 0
