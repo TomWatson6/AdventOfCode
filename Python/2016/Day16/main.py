@@ -12,8 +12,6 @@ def expand(a):
 DP = {}
 
 def crunch(a):
-    global DP
-
     if a in DP:
         return DP[a]
 
