@@ -9,7 +9,7 @@ fn read_input(file_name: &str) -> String {
     contents
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug)]
 struct State {
     plants: HashMap<isize, String>,
     start: isize,
