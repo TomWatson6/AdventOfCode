@@ -16,29 +16,30 @@ fn read_file(file_name: &str) -> String {
 
 fn main() {
     let input = read_file("input.txt");
-    let mut totals: Vec<i32> = Vec::new();
-    let mut total = 0;
+    
+    let most = input.split("\n\n")
+        .map(|x| x.lines()
+            .map(|x| x.parse().unwrap())
+            .collect::<Vec<usize>>()
+            .iter()
+            .sum::<usize>())
+        .max()
+        .unwrap();
 
-    for line in input.lines() {
-        if line == "" {
-            totals.push(total);
-            total = 0;
-            continue
-        }
+    println!("Part 1: {}", most);
 
-        total += line.parse::<i32>().unwrap();
-    }
+    let mut nums: Vec<usize> = input.split("\n\n")
+        .map(|x| x.lines()
+            .map(|n| n.parse().unwrap())
+            .collect::<Vec<usize>>()
+            .iter()
+            .sum::<usize>())
+        .collect();
 
-    totals.sort();
+    nums.sort();
+    let top_three: usize = nums[nums.len()-3..].iter().sum();
+    
 
-    println!("Part 1: {}", totals[totals.len()-1]);
-
-    total = 0;
-
-    for x in totals[totals.len()-3..].iter() {
-        total += x;
-    }
-
-    println!("Part 2: {}", total)
+    println!("Part 2: {}", top_three);
 }
 

@@ -1,11 +1,6 @@
-#![allow(unused)]
-
-use std::io::{self, Read};
-use std::vec;
-use std::io::{Write, BufReader, BufRead, ErrorKind};
+use std::io::Read;
 use std::fs::File;
-use std::cmp::Ordering;
-use std::collections::{HashMap, HashSet};
+use std::collections::HashSet;
 use std::collections::VecDeque;
 
 fn read_file(file_name: &str) -> String {

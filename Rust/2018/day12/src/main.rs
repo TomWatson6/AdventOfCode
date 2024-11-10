@@ -16,8 +16,8 @@ struct State {
     end: isize
 }
 
-impl State {
-    pub fn new(plants: &str) -> Self {
+impl From<&str> for State {
+    fn from(plants: &str) -> Self {
         let mut plants_map: HashMap<isize, String> = HashMap::new();
         let p: Vec<char> = plants.chars().collect();
 
@@ -31,7 +31,9 @@ impl State {
             end: plants.len() as isize,
         }
     }
+}
 
+impl State {
     pub fn string(&self) -> String {
         let mut output = String::new();
 
@@ -69,7 +71,7 @@ impl State {
                     i,
                     match transformations.get(segment.as_str()) {
                         Some(x) => {
-                            if x == &"#" {
+                            if *x == "#" {
                                 low = std::cmp::min(low, i);
                                 high = std::cmp::max(high, i + 1);
                             }
@@ -84,12 +86,9 @@ impl State {
             self.end = high;
             self.plants = next;
 
-            match seen.get(&self.string()) {
-                Some(_) => {
-                    let rem = iterations - c - 1;
-                    return rem as isize
-                },
-                _ => {},
+            if seen.get(&self.string()).is_some() {
+                let rem = iterations - c - 1;
+                return rem as isize
             }
 
             c += 1;
@@ -118,8 +117,8 @@ fn main() {
     let transformations = transformations.lines()
         .filter_map(|x| x.split_once(" => "))
         .collect::<HashMap<&str, &str>>();
-    let mut state = State::new(initial);
-    let mut state2 = State::new(initial);
+    let mut state = State::from(initial);
+    let mut state2 = State::from(initial);
 
     let offset = state.evolve(&transformations, 20);
     println!("Part 1: {}", state.total_plants(offset));
