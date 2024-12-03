@@ -3,7 +3,7 @@ import solution
 
 input = open("simple_input.txt").read().strip()
 
-class Day01Test(unittest.TestCase):
+class Day02Test(unittest.TestCase):
     def test_part1(self):
         self.assertEqual(2, solution.part1(input))
 
