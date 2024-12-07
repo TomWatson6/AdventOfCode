@@ -22,7 +22,7 @@ dirs = [
     (0, -1), # <
 ]
 
-def patrol(grid: dict[tuple[int, int], chr], pos: tuple[int, int])-> tuple[set[tuple[int, int]], bool]:
+def patrol(grid: dict[tuple[int, int], chr], pos: tuple[int, int]) -> tuple[set[tuple[int, int]], bool]:
     dir = (0, 0)
     curr = 0
     visited = set()
