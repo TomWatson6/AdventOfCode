@@ -20,13 +20,18 @@ def solve(outcome: int, leftover: list[int], p2: bool) -> int:
     left = leftover.pop(0)
     right = leftover.pop(0)
 
-    signs = ['+', '*', ''] if p2 else ['+', '*']
+    ops = ["add", "mult", "concat"] if p2 else ["add", "mult"]
 
-    for sign in signs:
-        output = eval(sign.join([str(left), str(right)]))
-        # print("Output:", output, outcome, left, right, leftover)
+    for op in ops:
+        output = 0
+        match op:
+            case "add":
+                output = left + right
+            case "mult":
+                output = left * right
+            case "concat":
+                output = int(str(left) + str(right))
         if output == outcome and len(leftover) == 0:
-            # print("Returning:", outcome)
             return outcome
         elif len(leftover) > 0:
             new_leftover = [output] + leftover
