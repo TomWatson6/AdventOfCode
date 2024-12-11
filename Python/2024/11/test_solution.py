@@ -8,7 +8,7 @@ class Day11Test(unittest.TestCase):
         self.assertEqual(55312, solution.part1(input))
 
     def test_part2(self):
-        self.assertEqual(55312, solution.part2(input))
+        self.assertEqual(65601038650482, solution.part2(input))
 
 if __name__ == "__main__":
     unittest.main()
