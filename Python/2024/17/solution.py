@@ -74,7 +74,7 @@ def part2(input: str) -> int:
     lower = 0
     upper = 10**20
     mid = (lower + upper) // 2
-    diffs = []
+
     while True:
         computer = Intcode(input)
         computer.registers[0] = mid
@@ -86,12 +86,12 @@ def part2(input: str) -> int:
         if curr > curr2:
             upper = mid
             mid = (lower + upper) // 2
-            if lower != mid and upper != mid:
+            if mid not in [lower, upper]:
                 continue
         elif curr < curr2:
             lower = mid
             mid = (lower + upper) // 2
-            if lower != mid and upper != mid:
+            if mid not in [lower, upper]:
                 continue
 
         i = lower
@@ -115,7 +115,7 @@ def part2(input: str) -> int:
             elif diff > 100_000_000:
                 i += 1_000_000
             elif diff > 100_000:
-                i += 100
+                i += 1_000
             else:
                 i += 1
         else:
