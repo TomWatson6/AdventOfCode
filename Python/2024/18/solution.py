@@ -47,8 +47,8 @@ def print_grid(grid, dim):
             print(grid[(x, y)], end='')
         print()
 
-def part1(input: str, dim: int) -> int:
-    grid = parse_input(input, dim, 1024)
+def part1(input: str, dim: int, num_bytes: int) -> int:
+    grid = parse_input(input, dim, num_bytes)
     dist = find(grid, (0, 0), (dim, dim), dim)
     return dist
 
@@ -66,7 +66,7 @@ def part2(input: str, dim: int) -> int:
         i += 1
 
 if __name__ == "__main__":
-    print("Part 1:", part1(input, 70))
+    print("Part 1:", part1(input, 70, 1024))
     print("Part 2:", part2(input, 70))
 
 
