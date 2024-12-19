@@ -10,27 +10,27 @@ def parse_input(input):
 
 DP = {}
 
-def find(pattern, patterns):
+def find(towel, patterns):
     curr_valid = False
 
-    if pattern in patterns:
+    if towel in patterns:
         curr_valid = True
 
-    if pattern in DP:
-        return DP[pattern]
+    if towel in DP:
+        return DP[towel]
 
     outcomes = []
 
-    for i in range(1, len(pattern)):
-        section = pattern[:i]
+    for i in range(1, len(towel)):
+        section = towel[:i]
         if section in patterns:
-            outcomes.append(find(pattern[i:], patterns))
+            outcomes.append(find(towel[i:], patterns))
 
     if len(outcomes) == 0:
-        DP[pattern] = curr_valid + 0
-        return curr_valid + 0
+        DP[towel] = curr_valid
+        return curr_valid
 
-    DP[pattern] = curr_valid + sum(outcomes)
+    DP[towel] = curr_valid + sum(outcomes)
 
     return curr_valid + sum(outcomes)
 
