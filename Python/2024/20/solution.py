@@ -13,8 +13,10 @@ def parse_input(input):
             grid[(r, c)] = lines[r][c]
             if lines[r][c] == 'S':
                 start = (r, c)
+                grid[(r, c)] = '.'
             if lines[r][c] == 'E':
                 dest = (r, c)
+                grid[(r, c)] = '.'
 
     return grid, start, dest
 
@@ -42,12 +44,12 @@ def find(grid, start, dest):
             rr = r + dr
             cc = c + dc
 
-            if (rr, cc) in grid and grid[(rr, cc)] in ['.', 'E']:
+            if (rr, cc) in grid and grid[(rr, cc)] == '.':
                 queue.append(((rr, cc), depth + 1))
 
     return 0
 
-def find_with_cheating(grid, start, dest, to_beat, cheat_low, cheat_high):
+def find_with_cheating(grid, start, dest, to_beat, cheat_length):
     queue = deque([(start, 0)]) # Loc, Depth
     seen = set()
     outcomes = []
@@ -73,7 +75,7 @@ def find_with_cheating(grid, start, dest, to_beat, cheat_low, cheat_high):
 
             queue.append(((rr, cc), depth + 1))
 
-        goals = [d for d in D.items() if cheat_low <= man_dist((r, c), d[0]) <= cheat_high and d[0] not in seen]
+        goals = [d for d in D.items() if man_dist((r, c), d[0]) <= cheat_length and d[0] not in seen]
         if len(goals) > 0:
             for goal, leftover in goals:
                 dist = man_dist((r, c), goal)
@@ -86,24 +88,20 @@ def find_with_cheating(grid, start, dest, to_beat, cheat_low, cheat_high):
 def man_dist(a, b):
     return abs(a[0] - b[0]) + abs(a[1] - b[1])
 
-def invert_distances(to_beat):
-    for k, v in D.items():
-        D[k] = to_beat - v
-
 def part1(input: str) -> int:
     grid, start, dest = parse_input(input)
-    to_beat = find(grid, start, dest)
-    invert_distances(to_beat)
-    outcomes = find_with_cheating(grid, start, dest, to_beat, 0, 2)
+    to_beat = find(grid, dest, start)
+    outcomes = find_with_cheating(grid, start, dest, to_beat, 2)
 
     return len([o for o in outcomes if o >= 100])
 
 def part2(input: str) -> int:
     grid, start, dest = parse_input(input)
-    to_beat = find(grid, start, dest)
-    outcomes = find_with_cheating(grid, start, dest, to_beat, 0, 20)
+    to_beat = find(grid, dest, start)
+    outcomes = find_with_cheating(grid, start, dest, to_beat, 20)
+    val = 100 if len(input.splitlines()) > 100 else 50
 
-    return len([o for o in outcomes if o >= 100])
+    return len([o for o in outcomes if o >= val])
 
 if __name__ == "__main__":
     print("Part 1:", part1(input))
