@@ -1,192 +1,112 @@
 from collections import deque, defaultdict, Counter
+from functools import cache
+from itertools import product
 
 input = open("input.txt").read().strip()
 
-dists = {
-    'A': 0,
-    '^': 1,
-    '>': 1,
-    'v': 2,
-    '<': 3,
-}
+numpad = [
+    ["7", "8", "9"],
+    ["4", "5", "6"],
+    ["1", "2", "3"],
+    [None, "0", "A"],
+]
 
-keypad = {
-    (0, 0): '7',
-    (0, 1): '8',
-    (0, 2): '9',
-    (1, 0): '4',
-    (1, 1): '5',
-    (1, 2): '6',
-    (2, 0): '1',
-    (2, 1): '2',
-    (2, 2): '3',
-    (3, 1): '0',
-    (3, 2): 'A',
-}
+keypad = [
+    [None, "^", "A"],
+    ["<", "v", ">"],
+]
 
-keypad_start = (3, 2)
+def find_sequences(pad):
+    pos = {}
+    paths = defaultdict(list)
 
-dir_keypad = {
-    (0, 1): '^',
-    (0, 2): 'A',
-    (1, 0): '<',
-    (1, 1): 'v',
-    (1, 2): '>',
-}
-
-dir_keypad_start = (0, 2)
-
-DP = {}
-DP_BIG = {}
-
-class Robot:
-    def __init__(self, inner):
-        self.id = inner
-        if inner:
-            self.robot = Robot(inner - 1)
-            self.keypad = dir_keypad
-            self.start = dir_keypad_start
-        else:
-            self.robot = None
-            self.keypad = keypad
-            self.start = keypad_start
-
-    # Pass press_sequence type ['0239A'] so it matches return type of find_paths
-    def press_sequence(self, seq):
-        if self.robot is not None:
-            seq = self.robot.press_sequence(seq)
-
-        paths = []
-
-        for s in seq:
-            if s in DP_BIG:
-                paths += DP_BIG[s]
+    for r in range(len(pad)):
+        for c in range(len(pad[0])):
+            if pad[r][c] is None:
                 continue
-            addition = self.find_paths(s)
-            paths += addition
-            DP_BIG[s] = addition
+            pos[pad[r][c]] = (r, c)
 
-        p = len(min(paths, key=lambda k: len(k)))
+    for a in [x for sublist in pad for x in sublist]:
+        if a is None:
+            continue
+        for b in [x for sublist in pad for x in sublist]:
+            if b is None:
+                continue
 
-        # print(Counter(len(t) for t in paths))
+            queue = deque([(pos[a], "", set())])
+            best = 10**20
 
-        before = len(paths)
-        paths = [t for t in paths if len(t) == p] 
-        print("Before reduction:", before, "After Reduction:", len(paths), "Len:", len(paths[0]))
+            while queue:
+                (r, c), path, seen = queue.popleft()
 
-        return paths
+                if (r, c) == pos[b] and len(path) <= best:
+                    best = len(path)
+                    paths[(a, b)].append(path + 'A')
 
-    def find_paths(self, seq):
-        to_return = defaultdict(list)
-        curr = tuple(self.start)
-
-        for i, move in enumerate(seq):
-            paths, curr = self.find(curr, move)
-            for path in [x for x in paths if len(x) == len(min(paths, key = lambda k: len(k)))]:
-                if i == 0:
-                    to_return[i].append(path)
+                if (r, c) in seen:
                     continue
 
-                for prev in to_return[i - 1]:
-                    to_return[i].append(prev + path)
+                for dr, dc, ch in [(-1, 0, '^'), (1, 0, 'v'), (0, -1, '<'), (0, 1, '>')]:
+                    rr = r + dr
+                    cc = c + dc
 
-        return to_return[i]
+                    if rr < 0 or rr >= len(pad) or cc < 0 or cc >= len(pad[0]) or pad[rr][cc] is None:
+                        continue
 
-    def convert_path(self, dirs):
-        path = ""
+                    queue.append(((rr, cc), path + ch, seen | set([(r, c)])))
 
-        for d in dirs:
-            match d:
-                case (-1, 0):
-                    path += '^'
-                case (1, 0):
-                    path += 'v'
-                case (0, -1):
-                    path += '<'
-                case (0, 1):
-                    path += '>'
-                case _:
-                    assert False, d
+    return paths
 
-        return path
+num_seqs = find_sequences(numpad)
+dir_seqs = find_sequences(keypad)
+dir_lengths = {k: len(v[0]) for k, v in dir_seqs.items()}
 
-    def build_path(self, dirs):
-        path = self.convert_path(dirs)
-        return "".join(path) + 'A'
+@cache
+def find(code, depth):
+    if depth == 1:
+        return sum(dir_lengths[(x, y)] for x, y in zip('A' + code, code))
 
-    def find(self, start, dest):
-        if (start, dest) in DP:
-            return DP[(self.keypad[start], dest)]
+    length = 0
 
-        queue = deque([(start, [], set())])
-        valid = []
-        dest_loc = (0, 0)
+    for a, b in list(zip('A' + code, code)):
+        length += min(find(c, depth - 1) for c in dir_seqs[(a, b)])
 
-        while queue:
-            (r, c), path, seen = queue.popleft()
+    return length
 
-            if self.keypad[(r, c)] == dest:
-                dest_loc = (r, c)
-                p = self.build_path(path)
-                if len(valid) == 0 or (len(valid) > 0 and len(p) <= len(valid[0])):
-                    valid.append(p)
-                else:
-                    break
-                continue
+def build_paths(code, seqs):
+    possibilities = []
+    code = 'A' + code
 
-            if (r, c) in seen:
-                continue
+    for a, b in list(zip(code, code[1:])):
+        possibilities.append(seqs[(a, b)])
 
-            seen.add((r, c))
-
-            for dr, dc in [(-1, 0), (1, 0), (0, -1), (0, 1)]:
-                rr = r + dr
-                cc = c + dc
-
-                if (rr, cc) not in self.keypad:
-                    continue
-
-                queue.append(((rr, cc), path + [(dr, dc)], set(seen)))
-
-        DP[(self.keypad[start], dest)] = valid, dest_loc
-        return valid, dest_loc
-
-    def __repr__(self):
-        if self.robot:
-            return f"(ID: {self.id} | Keypad: DIR_KEYPAD | Inner: {self.robot})"
-        return f"(ID: {self.id} | Keypad: NORMAL_KEYPAD)"
-
-# 379A -- Nothing matters about order
-# ^A^^<<A>>AvvvA -- As long as directions are grouped, it should be shortest
-# <A>A<AAv<AA>>^AvAA^Av<AAA^>A -- All grouped symbols above must be closest distance to each other for shortest path
-
-def parse_input(input):
-    lines = input.splitlines()
-
-    return lines
+    return list("".join(p) for p in product(*possibilities))
 
 def part1(input: str) -> int:
-    lines = parse_input(input)
-    robot = Robot(2)
-
     total = 0
 
-    for buttons in lines:
-        s = robot.press_sequence([buttons])
-        total += len(min(s, key=lambda k: len(k))) * int(buttons[:-1])
+    for line in input.splitlines():
+        paths = build_paths(line, num_seqs)
+        length = 10**20
+
+        for p in paths:
+            length = min(length, find(p, 2))
+
+        total += length * int(line[:-1])
 
     return total
 
 def part2(input: str) -> int:
-    lines = parse_input(input)
-    robot = Robot(26)
-
     total = 0
 
-    for buttons in lines:
-        s = robot.press_sequence([buttons])
+    for line in input.splitlines():
+        paths = build_paths(line, num_seqs)
+        length = 10**20
 
-        total += len(min(s, key=lambda k: len(k)))
+        for p in paths:
+            length = min(length, find(p, 25))
+
+        total += length * int(line[:-1])
 
     return total
 
