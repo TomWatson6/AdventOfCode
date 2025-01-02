@@ -55,15 +55,29 @@ def part1(input: str, dim: int, num_bytes: int) -> int:
 def part2(input: str, dim: int) -> int:
     i = 0
     lines = input.splitlines()
+    low = 0
+    high = len(lines)
+    mid = 0
 
-    while i < len(lines):
-        grid = parse_input(input, dim, i)
+    # while i < len(lines):
+    while low < high:
+        mid = (low + high) // 2
+        if abs(high - low) <= 1:
+            return lines[low]
+        grid = parse_input(input, dim, mid)
         dist = find(grid, (0, 0), (dim, dim), dim)
 
         if dist == 0:
-            return lines[i - 1]
+            high = mid
+        else:
+            low = mid
 
-        i += 1
+        # if dist == 0:
+        #     return lines[i - 1]
+
+        # i += 1
+
+    return lines[mid]
 
 if __name__ == "__main__":
     print("Part 1:", part1(input, 70, 1024))
