@@ -59,11 +59,11 @@ def part2(input: str, dim: int) -> int:
     high = len(lines)
     mid = 0
 
-    # while i < len(lines):
     while low < high:
         mid = (low + high) // 2
         if abs(high - low) <= 1:
             return lines[low]
+
         grid = parse_input(input, dim, mid)
         dist = find(grid, (0, 0), (dim, dim), dim)
 
@@ -71,11 +71,6 @@ def part2(input: str, dim: int) -> int:
             high = mid
         else:
             low = mid
-
-        # if dist == 0:
-        #     return lines[i - 1]
-
-        # i += 1
 
     return lines[mid]
 
