@@ -28,7 +28,6 @@ def emit(grid):
     queue = deque([(r, c)])
     seen = set()
     positions = set()
-    timelines = 0
 
     while queue:
         r, c = queue.popleft()
