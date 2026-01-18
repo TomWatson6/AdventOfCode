@@ -1,57 +1,71 @@
 import re
+from collections import defaultdict
 
 input = open("input.txt").read().strip()
 
+bots = defaultdict(lambda: [])
+values = defaultdict(lambda: [])
+
 def parse(input: str):
-    lines = input.splitlines()
-    return lines
-
-def configure_bots(lines):
-    bots = {}
-
-    for line in lines:
-        if line.startswith("value"):
-            val, bot = list(re.findall(r"\d+|bot \d+", line))
-            val = int(val)
-            if bot in bots:
-                lower, upper = bots[bot]
-                if val < lower:
-                    lower = val
-                elif val > upper:
-                    upper = val
-                else:
-                    assert False, (lower, upper, val)
-            else:
-                bots[bot] = (val, val)
-
-        elif line.startswith("bot"):
-            origin, low_bot, high_bot = list(re.findall(r"bot \d+|output \d+", line))
-            lower, upper = bots[origin]
-
-            if low_bot in bots:
-                lo, hi = bots[low_bot]
-                bots[low_bot] = (lower, hi)
-            else:
-                bots[low_bot] = (lo, lower)
-
-            if high_bot in bots:
-                lo, hi = bots[high_bot]
-                bots[high_bot] = (lo, upper)
-            else:
-                bots[high_bot] = (upper, upper)
-
-    return bots
+    for line in input.splitlines():
+        parts = re.findall(r"(\w+ \d+)", line)
+        if len(parts) == 3:
+            # bot [x] gives low to bot [y] and high to bot [z]
+            bots[parts[0]] = [parts[1], parts[2]]
+        elif len(parts) == 2:
+            # value [x] goes to bot [y]
+            values[parts[1]].append(int(parts[0].split()[1]))
+        else:
+            assert False, (line, parts)
 
 def part1(input: str) -> int:
-    lines = parse(input)
+    parse(input)
 
-    bots = configure_bots(lines)
-    print(bots)
+    while True:
+        vals = [x for x in values.items() if len(x[1]) == 2]
+        if len(vals) == 0:
+            break
+
+        for k, v in vals:
+            if sorted(v) == [17, 61]:
+                return k.split()[1]
+
+            dest = bots[k]
+
+            if len(dest) <= 1:
+                if len(dest) == 0:
+                    assert False, (k, v)
+                continue
+
+            low, high = dest
+
+            values[low].append(min(v))
+            values[high].append(max(v))
+            values[k] = []
 
     return 0
 
 def part2(input: str) -> int:
-    return 0
+    while True:
+        vals = [x for x in values.items() if len(x[1]) == 2]
+        if len(vals) == 0:
+            break
+
+        for k, v in vals:
+            dest = bots[k]
+
+            if len(dest) <= 1:
+                if len(dest) == 0:
+                    assert False, (k, v)
+                continue
+
+            low, high = dest
+
+            values[low].append(min(v))
+            values[high].append(max(v))
+            values[k] = []
+
+    return values["output 0"][0] * values["output 1"][0] * values["output 2"][0]
 
 if __name__ == "__main__":
     print("Part 1:", part1(input))
