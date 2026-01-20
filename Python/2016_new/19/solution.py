@@ -72,18 +72,6 @@ def part2(input: str) -> int:
 
     return target - i
 
-    # elves = LinkedList([i for i in range(amount)])
-    # curr = elves.root
-
-    # while len(elves.indices) > 1:
-    #     opp = (curr.val + len(elves.indices) // 2) % len(elves.indices)
-    #     opp = elves.indices[opp]
-    #     print(f"{curr=}, {opp=}, {len(elves.indices)=}, {elves.indices=}")
-    #     elves.remove(opp)
-    #     curr = curr.next
-
-    # return curr.val + 1
-
 if __name__ == "__main__":
     print("Part 1:", part1(input))
     print("Part 2:", part2(input))
