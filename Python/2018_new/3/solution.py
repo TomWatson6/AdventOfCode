@@ -2,17 +2,6 @@ from collections import defaultdict
 
 input = open("input.txt").read().strip()
 
-#1 @ 167,777: 23x12
-#2 @ 253,106: 10x25
-#3 @ 104,622: 11x25
-#4 @ 267,61: 14x16
-#5 @ 829,831: 19x10
-#6 @ 886,374: 22x12
-#7 @ 129,812: 18x17
-#8 @ 972,677: 14x17
-#9 @ 123,249: 12x14
-#10 @ 669,330: 11x21
-
 def parse(input: str):
     return input.splitlines()
 
